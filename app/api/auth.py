@@ -17,7 +17,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 
-@router.post("/token")
+@router.post("/login")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: SessionDep = get_session(), 
@@ -38,7 +38,7 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/me/", response_model=User)
+@router.get("/me", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
