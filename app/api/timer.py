@@ -14,7 +14,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 @router.post("/timer")
-async def create_timer(
+async def toggle_timer(
     current_user: Annotated[User, Depends(get_current_user)],
     note: str = "",
     tags: str = "",
@@ -24,7 +24,7 @@ async def create_timer(
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     else:
-        timespan, created = timer_service.get_or_create_active_timespan(
+        timespan, created = timer_service.toggle_timespan(
             user_id=current_user.id,
             note=note,
             tags=tags,
@@ -32,7 +32,7 @@ async def create_timer(
         return TimerResponse(timespan=timespan, created=created)
 
 
-@router.get("/timer/active")
+@router.get("/timer")
 async def get_active_timer(
     current_user: Annotated[User, Depends(get_current_user)],
     session: SessionDep
@@ -46,17 +46,3 @@ async def get_active_timer(
             raise HTTPException(status_code=404, detail="No active timer found")
         return timespan
 
-
-@router.post("/timer/end")
-async def end_timer(
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: SessionDep
-) -> TimeSpan:
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    else:
-        timer_service = TimerService(session)
-        timespan = timer_service.end_active_timespan(user_id=current_user.id)
-        if not timespan:
-            raise HTTPException(status_code=404, detail="No active timer found to end")
-        return timespan

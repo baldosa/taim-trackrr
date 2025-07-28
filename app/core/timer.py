@@ -26,10 +26,10 @@ class TimerService:
         self.session.refresh(timespan)
         return timespan
 
-    def get_or_create_active_timespan(self, user_id: int, note: str = "", tags: str = "") -> tuple[TimeSpan, bool]:
+    def toggle_timespan(self, user_id: int, note: str = "", tags: str = "") -> tuple[TimeSpan, bool]:
         active_timespan = self.get_active_timespan(user_id)
         if active_timespan:
-            return active_timespan, False
+            return self.end_active_timespan(user_id), False
         return self.create_timespan(user_id, note, tags), True
 
     def end_active_timespan(self, user_id: int) -> TimeSpan | None:
