@@ -1,13 +1,11 @@
 import os
-from typing import Annotated
-
-from fastapi import Depends
+from dotenv import load_dotenv
+from sqlmodel import Session
 from app.core.security import pwd_context
+from app.db.base import engine
 from app.db.models import User
 
-from sqlmodel import Session
-
-from app.db.base import engine
+load_dotenv()
 
 with Session(engine) as session:
     user_data =User(
