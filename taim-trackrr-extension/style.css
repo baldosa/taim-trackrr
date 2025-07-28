@@ -37,7 +37,7 @@ h1 {
     box-sizing: border-box;
 }
 
-#saveButton {
+.btn {
     width: 100%;
     padding: 12px;
     background-color: #28a745;
@@ -48,24 +48,10 @@ h1 {
     cursor: pointer;
 }
 
-#saveButton:hover {
+.btn:hover {
     background-color: #218838;
 }
 
-#startTracker {
-    width: 100%;
-    padding: 12px;
-    background-color: #28a745;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-#startTracker:hover {
-    background-color: #218838;
-}
 
 .popup {
     position: fixed;

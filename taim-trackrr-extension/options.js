@@ -1,19 +1,46 @@
 // Saves the settings in input values to Chrome storage
-function saveSettings() {
-  console.log('Saving settings...');
-  const tokenInput = document.getElementById('tokenInput');
-  const refreshTokenInput = document.getElementById('refreshTokenInput');
+async function saveSettings(formData) {
+
+  const username = document.getElementById('username');
+  const password = document.getElementById('password');
   const serverUrlInput = document.getElementById('serverUrlInput');
 
-  const settings = {
-    token: tokenInput.value,
-    refreshToken: refreshTokenInput.value,
-    serverUrl: serverUrlInput.value
-  };
+  if (!username.value || !password.value || !serverUrlInput.value) {
+    showPopup('Please fill in all fields.');
+    return;
+  }
 
-  chrome.storage.sync.set({ settings }, () => {
-    showPopup('Settings saved!');
+  const response = await fetch(`${serverUrlInput.value}/api/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `grant_type=password&username=${username.value}&password=${password.value}`
   });
+
+  if (!response.ok) {
+    showPopup('Login failed.');
+    return;
+  }
+
+  const data = await response.json();
+  if (data) {
+    // Save the token and server URL in Chrome storage
+    const settings = {
+      token: data.access_token,
+      serverUrl: serverUrlInput.value
+    };
+
+    chrome.storage.sync.set({ settings }, () => {
+      showPopup('Settings saved!');
+      hideLoginForm(settings.serverUrl);
+    });
+
+  } else {
+    showPopup('Failed to retrieve token.');
+  }
+
+
 }
 
 // Display a temporary popup message
@@ -30,24 +57,45 @@ function showPopup(message) {
     }, 500); // match with fade-out transition duration
   }, 2000);
 }
+
+function hideLoginForm(serverUrl) {
+  const form = document.querySelector('form');
+  const container = document.querySelector('.container');
+
+  form.hidden = true; // Hide the form if settings are already saved
+
+  const statusDiv = document.createElement('p');
+  statusDiv.textContent = `Connected to: ${serverUrl}`;
+  statusDiv.className = 'status';
+  container.appendChild(statusDiv);
+
+  const logoutButton = document.createElement('button');
+  logoutButton.classList.add('btn');
+  logoutButton.textContent = 'Logout';
+  logoutButton.addEventListener('click', () => {
+    chrome.storage.sync.remove('settings', () => {
+      showPopup('Logged out successfully.');
+      location.reload(); // Reload the page to reset the form
+    });
+  });
+  container.appendChild(logoutButton);
+}
+
 // Initializes the options page by setting up event listeners
 document.addEventListener('DOMContentLoaded', () => {
-  // Get all buttons and add click event listeners
-  const buttons = document.querySelectorAll('.color-button');
-  buttons.forEach(button => {
-    button.addEventListener('click', handleButtonClick);
-  });
-
-  // Get the save button and add a click event listener
-  const saveButton = document.getElementById('saveButton');
-  saveButton.addEventListener('click', saveSettings);
+  // Prevent default form submission
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      saveSettings();
+    });
+  }
 
   // Load the saved settings from Chrome storage
   chrome.storage.sync.get('settings', data => {
     if (data.settings) {
-      document.getElementById('tokenInput').value = data.settings.token;
-      document.getElementById('refreshTokenInput').value = data.settings.refreshToken;
-      document.getElementById('serverUrlInput').value = data.settings.serverUrl;
+      hideLoginForm(data.settings.serverUrl);
     }
   });
 });
