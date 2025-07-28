@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Taim Trackrr Options</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="input-group">
+        <label for="tokenInput">Access token</label>
+        <input
+          type="text"
+          id="tokenInput"
+          placeholder="Enter your token here"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label for="refreshTokenInput">Refresh token</label>
+        <input
+          type="text"
+          id="refreshTokenInput"
+          placeholder="Enter your refresh token here"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label for="serverUrlInput">Server URL</label>
+        <input
+          type="text"
+          id="serverUrlInput"
+          placeholder="Enter your server URL here"
+          required
+        />
+      </div>
+      <button id="saveButton">Save</button>
+    </div>
+    <script src="options.js"></script>
+  </body>
+</html>
