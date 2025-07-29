@@ -2,8 +2,7 @@
 from sqlmodel import create_engine, Session, SQLModel
 from app.core.config import settings
 
-connect_args = {"check_same_thread": False}
-engine = create_engine(settings.DATABASE_URL, connect_args=connect_args)
+engine = create_engine(settings.DATABASE_URL)
 
 def get_session():
     with Session(engine) as session:
