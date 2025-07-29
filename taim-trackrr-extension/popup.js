@@ -9,7 +9,7 @@ startTracker.addEventListener('click', async () => {
     target: { tabId: tab.id },
     func: toggleTimer
   });
-  // window.close();
+  window.close();
 
 });
 
@@ -19,22 +19,6 @@ async function toggleTimer() {
   settings = await chrome.storage.sync.get('settings');
 
   // Send a message to the server to start the timer
-  const response = await fetch(`${settings.settings.serverUrl}/api/timer`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${settings.settings.token}`
-    }
-  })
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-}
-
-async function stopTimer() {
-  settings = await chrome.storage.sync.get('settings');
-
-  // Send a message to the server to stop the timer
   const response = await fetch(`${settings.settings.serverUrl}/api/timer`, {
     method: 'POST',
     headers: {
