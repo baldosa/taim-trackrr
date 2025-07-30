@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
     env_file:
       - .env
     volumes:
@@ -23,5 +21,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  caddy:
+    image: caddy:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
 volumes:
   db_data:
+  caddy_data:
+  caddy_config:
