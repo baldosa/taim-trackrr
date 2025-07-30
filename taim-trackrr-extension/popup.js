@@ -3,12 +3,7 @@ const startTracker = document.getElementById('startTracker');
 
 // When the button is clicked, inject setPageBackgroundColor into current page
 startTracker.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: toggleTimer
-  });
+  toggleTimer();
   window.close();
 
 });
