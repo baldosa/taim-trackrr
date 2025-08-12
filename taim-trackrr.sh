@@ -49,6 +49,8 @@ get() {
     start_time=$(echo "$response" | jq -r '.start_time // empty')
     if [[ -n "$start_time" ]]; then
         echo "Current timer: $(echo "$response")"
+    elif [[ $(echo "$response" | jq -r '.detail') == "No active timer found" ]]; then
+        echo "No active timer found"
     else
         echo "Error: $(echo "$response")"
     fi
