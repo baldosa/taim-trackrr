@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, timer
+from app.api import auth, timer, stats
 app = FastAPI(title="Taim Trackrr")
 
 app.add_middleware(
@@ -17,3 +17,5 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api")
 app.include_router(timer.router, prefix="/api")
+
+app.include_router(stats.router, prefix="/api/stats")
