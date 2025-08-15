@@ -1,5 +1,24 @@
 #!/bin/bash
 # this scripts interacts with the Taim Trackrr API
+# show help function
+
+show_help() {
+    echo "Taim Trackrr CLI"
+    echo
+    echo "Usage:"
+    echo "  $(basename "$0") <command> [options]"
+    echo
+    echo "Commands:"
+    echo "  login <url> <username> <password>  - Login to Taim Trackrr"
+    echo "  set                               - Start/Stop timer"
+    echo "  get                               - Get current timer status"
+    echo "  help                              - Show this help message"
+    echo
+    echo "Examples:"
+    echo "  $(basename "$0") login http://taimtracker.com user password123"
+    echo "  $(basename "$0") set              # Toggle timer start/stop"
+    echo "  $(basename "$0") get              # Show current timer"
+}
 
 # load environment variables
 load_setting() {
@@ -35,8 +54,10 @@ set() {
     response=$(curl -s -X POST "$API_URL/api/timer" -H "Content-Type: application/json" -H "Authorization: Bearer $API_TOKEN")
     
     start_time=$(echo "$response" | jq -r '.start_time // empty')
-    if [[ -n "$start_time" ]]; then
+    if [[ $(echo "$response" | jq -r .status) == "started" ]]; then
         echo "Timer set"
+    elif [[ $(echo "$response" | jq -r .status) == "stopped" ]]; then
+        echo "Timer stopped"
     else
         echo "Error: $(echo "$response")"
     fi
@@ -60,4 +81,5 @@ case $1 in
 login) "$@"; exit;;
 set) "$@"; exit;;
 get) "$@"; exit;;
+*) echo "Unknown command: $1"; show_help; exit 1;;
 esac

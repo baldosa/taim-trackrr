@@ -17,7 +17,13 @@ Then you can POST to /api/timer to start or stop a timespan.
 
 If you GET to that endpoint you get the current timespan (if any)
 
+## Chrome extension
+
 Theres a simple chrome extension in the folder `taim-trackrr-extension` with a START/STOP button that can talk to the app.
+
+## CLI
+
+There's a bash script to use to login/set timer/get timer.
 
 ## How to colaborate
 
