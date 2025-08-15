@@ -24,12 +24,12 @@ async def toggle_timer(
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     else:
-        timespan, created = timer_service.toggle_timespan(
+        timespan, status = timer_service.toggle_timespan(
             user_id=current_user.id,
             note=note,
             tags=tags,
         )
-        return TimerResponse(timespan=timespan, created=created)
+        return TimerResponse(timespan=timespan, status=status)
 
 
 @router.get("/timer")

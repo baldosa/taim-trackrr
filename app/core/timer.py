@@ -29,8 +29,8 @@ class TimerService:
     def toggle_timespan(self, user_id: int, note: str = "", tags: str = "") -> tuple[TimeSpan, bool]:
         active_timespan = self.get_active_timespan(user_id)
         if active_timespan:
-            return self.end_active_timespan(user_id), False
-        return self.create_timespan(user_id, note, tags), True
+            return self.end_active_timespan(user_id), 'stopped'
+        return self.create_timespan(user_id, note, tags), 'started'
 
     def end_active_timespan(self, user_id: int) -> TimeSpan | None:
         """End the active timespan by setting its end_time. Returns the updated timespan."""
@@ -42,3 +42,4 @@ class TimerService:
         self.session.commit()
         self.session.refresh(timespan)
         return timespan
+        
