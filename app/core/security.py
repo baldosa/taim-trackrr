@@ -10,6 +10,7 @@ from passlib.context import CryptContext
 from app.core.config import settings
 from app.db.base import get_session
 from app.db.models import User
+from app.schemas.auth import UserCreate
 
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
@@ -17,6 +18,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None) -> str:
     to_encode = data.copy()
@@ -55,3 +59,41 @@ async def get_current_user( token: Annotated[str, Depends(oauth2_scheme)], sessi
     if user is None:
         raise credentials_exception
     return user
+
+def get_user_by_username(session: Session, username: str) -> User | None:
+    statement = select(User).where(User.username == username)
+    return session.exec(statement).first()
+
+
+def create_new_user(session: Session, user_create: UserCreate) -> User:
+    """
+    Create a new user in the database.
+    Raises HTTPException if username already exists.
+    """
+    # Check if username already exists
+    if get_user_by_username(session, user_create.username):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already registered"
+        )
+    
+    # Create new user
+    db_user = User(
+        username=user_create.username,
+        hashed_password=get_password_hash(user_create.password),
+        email=user_create.email,
+        full_name=user_create.full_name,
+        disabled=False
+    )
+    
+    try:
+        session.add(db_user)
+        session.commit()
+        session.refresh(db_user)
+        return db_user
+    except Exception:
+        session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not create user"
+        )

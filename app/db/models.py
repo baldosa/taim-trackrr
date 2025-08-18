@@ -3,7 +3,7 @@ from datetime import datetime
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    username: str
+    username: str = Field(unique=True, index=True)
     hashed_password: str
     email: str | None = None
     full_name: str | None = None
